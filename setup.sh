@@ -11,4 +11,6 @@ alias l="ls"
 alias cls="clear"
 alias myip="curl ifconfig.me"
 
+echo "Setting up vim"
+
 echo "Done!"
