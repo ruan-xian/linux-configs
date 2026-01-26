@@ -13,6 +13,7 @@ alias myip="curl ifconfig.me"
 
 echo "Setting up vim"
 mkdir ~/.vim
-curl -s "https://raw.githubusercontent.com/ruan-xian/linux-configs/refs/heads/main/iceberg.vim" > ~/.vim/iceberg.vim
+mkdir ~/.vim/colors
+curl -s "https://raw.githubusercontent.com/cocopon/iceberg.vim/refs/heads/master/colors/iceberg.vim" > ~/.vim/colors/iceberg.vim
 
 echo "Done!"
