@@ -18,5 +18,6 @@ echo "Setting up vim colors"
 curl --create-dirs -so ~/.vim/colors/iceberg.vim "https://raw.githubusercontent.com/cocopon/iceberg.vim/refs/heads/master/colors/iceberg.vim"
 
 echo "Setting up .vimrc"
+curl -so ~/.vimrc "https://raw.githubusercontent.com/ruan-xian/linux-configs/refs/heads/main/.vimrc"
 
 echo "Done!"
