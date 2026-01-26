@@ -1,5 +1,8 @@
 echo "Starting setup..."
 
+echo "Setting colors"
+export TERM=xterm-256color
+
 echo "Going to log directory"
 cd /var/log
 
