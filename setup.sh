@@ -22,7 +22,7 @@ curl -so ~/.vimrc "https://raw.githubusercontent.com/ruan-xian/linux-configs/ref
 
 echo "Setting up functions"
 count5xx() {
-    { echo "5xx Count    ,Route"; awk '/5[0-9]{2}\s+[0-9]+\s+[0-9]+ms/ {c[$(NF-4) " " $(NF-3)]++} END {for (k in c) print c[k] "," k}' /var/log/messages | sort -rn; } | column -t -s ","
+    { echo "5xx Count    ,Route"; awk '/5[0-9]{2}\s+[0-9]+\s+[0-9]+ms/ {c[sprintf("%-8s%s", $(NF-4), $(NF-3))]++} END {for (k in c) print c[k] "," k}' /var/log/messages | sort -rn; } | column -t -s ","
     }
 
 echo "Done!"
