@@ -13,6 +13,5 @@ set hlsearch
 set incsearch
 set scrolloff=5
 set siso=5
-set sms
 set autoindent
 set ru
