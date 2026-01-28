@@ -13,6 +13,7 @@ echo "Configuring aliases"
 alias l="ls"
 alias cls="clear"
 alias myip="curl ifconfig.me"
+alias lm="less /var/log/messages"
 
 echo "Setting up vim colors"
 curl --create-dirs -so ~/.vim/colors/iceberg.vim "https://raw.githubusercontent.com/cocopon/iceberg.vim/refs/heads/master/colors/iceberg.vim"
