@@ -29,7 +29,7 @@ echo "Setting up functions"
     grep -B 10 --color=always "$1 500" /var/log/messages | less -R
 }
 ,runtimes() {
-    { echo "Reqs,Route,Avg,Med,P90,OK%"; awk '
+    { echo "Reqs,Route,Avg,Med,P90,OK%"; gawk '
 /[0-9]{3}\s+\S+\s+[0-9]+ms/ {
     route = $(NF-3); method = $(NF-4); status = $(NF-2); time = $(NF)
     gsub(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/, ".*", route)
@@ -46,16 +46,7 @@ END {
     red = "\033[31m"; yellow = "\033[33m"; reset = "\033[0m"
     for (key in n) {
         cnt = n[key]
-        # insertion sort
-        for (i = 2; i <= cnt; i++) {
-            v = times[key][i]
-            j = i - 1
-            while (j >= 1 && times[key][j] > v) {
-                times[key][j+1] = times[key][j]
-                j--
-            }
-            times[key][j+1] = v
-        }
+        asort(times[key])
         sum = 0
         for (i = 1; i <= cnt; i++) sum += times[key][i]
         avg = int(sum / cnt + 0.5)
