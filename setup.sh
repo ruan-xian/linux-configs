@@ -28,5 +28,46 @@ echo "Setting up functions"
 ,get5xxContext() {
     grep -B 10 --color=always "$1 500" /var/log/messages | less -R
 }
+,runtimes() {
+    { echo "Reqs,Route,Avg,Med,P90,OK%"; awk '
+/[0-9]{3}\s+\S+\s+[0-9]+ms/ {
+    route = $(NF-3); method = $(NF-4); status = $(NF-2); time = $(NF)
+    gsub(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/, ".*", route)
+    gsub(/[0-9a-f]{24}/, ".*", route)
+    gsub(/\.\*\.[0-9]+/, ".*", route)
+    gsub(/\?.*/, "", route)
+    key = method " " route
+    sub(/ms$/, "", time); time = time + 0
+    times[key][++n[key]] = time
+    if (status + 0 < 500) ok[key]++
+}
+END {
+    for (key in n) {
+        cnt = n[key]
+        # insertion sort
+        for (i = 2; i <= cnt; i++) {
+            v = times[key][i]
+            j = i - 1
+            while (j >= 1 && times[key][j] > v) {
+                times[key][j+1] = times[key][j]
+                j--
+            }
+            times[key][j+1] = v
+        }
+        sum = 0
+        for (i = 1; i <= cnt; i++) sum += times[key][i]
+        avg = int(sum / cnt + 0.5)
+        med_i = int((cnt + 1) / 2)
+        if (cnt % 2 == 1) med = times[key][med_i]
+        else med = int((times[key][cnt/2] + times[key][cnt/2+1]) / 2 + 0.5)
+        p90_i = int(cnt * 0.9 + 0.5)
+        if (p90_i < 1) p90_i = 1
+        if (p90_i > cnt) p90_i = cnt
+        p90 = times[key][p90_i]
+        ok_pct = (ok[key] + 0) / cnt * 100
+        printf "%d,%s,%dms,%dms,%dms,%.1f%%\n", cnt, key, avg, med, p90, ok_pct
+    }
+}' /var/log/messages | sort -t, -k1 -rn; } | column -t -s ","
+}
 
 echo "Done!"
