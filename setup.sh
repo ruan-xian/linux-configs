@@ -35,6 +35,7 @@ echo "Setting up functions"
     gsub(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/, ".*", route)
     gsub(/[0-9a-f]{24}/, ".*", route)
     gsub(/\.\*\.[0-9]+/, ".*", route)
+    gsub(/\/ticker\/[A-Za-z0-9.]+/, "/ticker/.*", route)
     gsub(/\?.*/, "", route)
     key = method " " route
     sub(/ms$/, "", time); time = time + 0
@@ -42,6 +43,7 @@ echo "Setting up functions"
     if (status + 0 < 500) ok[key]++
 }
 END {
+    red = "\033[31m"; yellow = "\033[33m"; reset = "\033[0m"
     for (key in n) {
         cnt = n[key]
         # insertion sort
@@ -65,9 +67,13 @@ END {
         if (p90_i > cnt) p90_i = cnt
         p90 = times[key][p90_i]
         ok_pct = (ok[key] + 0) / cnt * 100
-        printf "%d,%s,%dms,%dms,%dms,%.1f%%\n", cnt, key, avg, med, p90, ok_pct
+        color = ""
+        if (ok_pct < 100) color = red
+        else if (avg >= 1000) color = red
+        else if (avg >= 500) color = yellow
+        printf "%s%d,%s,%dms,%dms,%dms,%.1f%%%s\n", color, cnt, key, avg, med, p90, ok_pct, (color ? reset : "")
     }
-}' /var/log/messages | sort -t, -k3 -rn; } | column -t -s ","
+}' /var/log/messages | sort -t, -k3 -rn; } | column -t -s "," | less -RFS
 }
 
 echo "Done!"
