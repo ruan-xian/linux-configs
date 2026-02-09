@@ -67,7 +67,7 @@ END {
         ok_pct = (ok[key] + 0) / cnt * 100
         printf "%d,%s,%dms,%dms,%dms,%.1f%%\n", cnt, key, avg, med, p90, ok_pct
     }
-}' /var/log/messages | sort -t, -k1 -rn; } | column -t -s ","
+}' /var/log/messages | sort -t, -k3 -rn; } | column -t -s ","
 }
 
 echo "Done!"
