@@ -29,7 +29,7 @@ echo "Setting up functions"
     grep -B 10 --color=always "$1 500" /var/log/messages | less -R
 }
 ,runtimes() {
-    { echo "Reqs,Route,Avg,Med,P90,OK%"; gawk '
+    { echo "Reqs,Route,Avg,Med,P90,P99,OK%"; gawk '
 /[0-9]{3}\s+\S+\s+[0-9]+ms/ {
     route = $(NF-3); method = $(NF-4); status = $(NF-2); time = $(NF)
     gsub(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/, ".*", route)
@@ -57,12 +57,16 @@ END {
         if (p90_i < 1) p90_i = 1
         if (p90_i > cnt) p90_i = cnt
         p90 = times[key][p90_i]
+        p99_i = int(cnt * 0.99 + 0.5)
+        if (p99_i < 1) p99_i = 1
+        if (p99_i > cnt) p99_i = cnt
+        p99 = times[key][p99_i]
         ok_pct = (ok[key] + 0) / cnt * 100
         color = ""
         if (ok_pct < 100) color = red
         else if (avg >= 1000) color = red
         else if (avg >= 500) color = yellow
-        printf "%s%d,%s,%dms,%dms,%dms,%.1f%%%s\n", color, cnt, key, avg, med, p90, ok_pct, (color ? reset : "")
+        printf "%s%d,%s,%dms,%dms,%dms,%dms,%.1f%%%s\n", color, cnt, key, avg, med, p90, p99, ok_pct, (color ? reset : "")
     }
 }' /var/log/messages | sort -t, -k3 -rn; } | column -t -s "," | less -RFS
 }
